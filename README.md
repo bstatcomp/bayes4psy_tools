@@ -1,6 +1,13 @@
 # bayes4psy_tool
 A repository containing supporting tools for the bayes4psy package.
 
+
+# v 1.1.0
+
+### New features and improvements
+Added the bayes4psy package as a submodule to this repository.
+
+
 # v 1.0.0
 
 ### New features and improvements
