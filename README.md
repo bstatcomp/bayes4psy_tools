@@ -1,3 +1,3 @@
 # bayes4psy_tools
 
-Supporting tools for the bayes4psy package.
+A repository containing supporting tools for the bayes4psy package.
