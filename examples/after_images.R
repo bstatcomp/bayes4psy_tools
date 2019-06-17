@@ -1,307 +1,301 @@
 # libs
 library(bayes4psy)
 library(dplyr)
+library(ggplot2)
 
 
-## data wrangling and fitting --------------------------------------------
-color_levels <- c("red", "green", "blue", "yellow", "cyan", "magenta")
-
+## data wrangling and fitting -------------------------------------------------
 # load data
-df_all <- read.table("../examples/data/after_images.csv", sep="\t", header=TRUE)
-levels(df_all$stimuli) <- color_levels
+data_all <- read.table("../examples/data/after_images.csv", sep="\t", header=TRUE)
+data_all2 <- data_all
 
 # add stimuli data
 colors <- c("cyan", "magenta", "blue", "yellow", "green", "red")
-df_stimuli <- expand.grid(r_s=c(255, 0), g_s=c(255, 0), b_s=c(255, 0))[c(-1, -8), ] %>%
+stimuli <- expand.grid(r_s=c(255, 0), g_s=c(255, 0), b_s=c(255, 0))[c(-1, -8), ] %>%
   mutate(stimuli=factor(colors, levels=color_levels)) %>%
   arrange(stimuli)
-df_stimuli[c("h_s", "s_s", "v_s")] <- with(df_stimuli, t(rgb2hsv(r_s, g_s, b_s, maxColorValue=255)))
+stimuli[c("h_s", "s_s", "v_s")] <- with(stimuli, t(rgb2hsv(r_s, g_s, b_s, maxColorValue=255)))
 
-df_stimuli$h_s <- df_stimuli$h_s * 2*pi
+# cast hue to 0 .. 2pi
+stimuli$h_s <- stimuli$h_s * 2*pi
+
 # merge stimuli data with measurements
-df_all <- inner_join(df_all, df_stimuli)
+data_all <- inner_join(data_all, stimuli)
 
 
-## blue ------------------------------------------------------------------
-df_blue <- df_all %>% filter(stimuli == "blue")
-n <- nrow(df_blue) # number of measurements
-df <- data.frame(r=df_blue$r, g=df_blue$g, b=df_blue$b)
-fit_blue <- b_color(df)
+## priors ---------------------------------------------------------------------
+mu_prior <- b_prior(family="uniform", pars=c(0, 255))
+sigma_prior <- b_prior(family="uniform", pars=c(0, 100))
 
-# print summary
-summary(fit_blue)
+# attach priors to relevant parameters
+priors <- list(c("mu_r", mu_prior),
+               c("sigma_r", sigma_prior),
+               c("mu_g", mu_prior),
+               c("sigma_g", sigma_prior),
+               c("mu_b", mu_prior),
+               c("sigma_b", sigma_prior))
 
-# print a more detailed summary (prints the fit object)
-# same as show(ttest_results)
+
+## blue stimuli ---------------------------------------------------------------
+data_blue <- data_all %>% filter(stimuli == "blue")
+data_blue <- data.frame(r=data_blue$r, g=data_blue$g, b=data_blue$b)
+fit_blue <- b_color(colors=data_blue, priors=priors)
+
+# check fit
+plot_trace(fit_blue)
 print(fit_blue)
-
-# visualize fit quality
 plot_fit(fit_blue)
 
-# visualize fit quality through hsv plot
+# additional fit visualization for hue
 plot_fit_hsv(fit_blue)
 
-# plot trace
-plot_trace(fit_blue)
 
-# means for single fit
-plot_means(fit_blue)
+## red stimuli ----------------------------------------------------------------
+data_red <- data_all %>% filter(stimuli == "red")
+data_red <- data.frame(r=data_red$r, g=data_red$g, b=data_red$b)
+fit_red <- b_color(colors=data_red, priors=priors)
 
-# distribution for single fit
-plot_distributions(fit_blue)
+# check fit
+plot_trace(fit_red)
+print(fit_red)
+plot_fit(fit_red)
 
-
-## red -------------------------------------------------------------------
-df_red <- df_all %>% filter(stimuli == "red")
-n <- nrow(df_red) # number of measurements
-df <- data.frame(r=df_red$r, g=df_red$g, b=df_red$b)
-fit_red <- b_color(df)
-
-# visualize fit quality through hsv plot
+# additional fit visualization for hue
 plot_fit_hsv(fit_red)
-
-# compare_means
-compare_means(fit_blue, fit_red)
-
-# plot_means_difference
-plot_means_difference(fit_blue, fit_red)
-
-# plot_means_hsv
-plot_means_hsv(fit_blue, fit_red)
-
-# plot_means
-plot_means(fit_blue, fit_red)
-
-# compare_distributions
-compare_distributions(fit_blue, fit_red)
-
-# plot_distributions
-plot_distributions(fit_blue, fit_red)
-
-# plot_distributions_difference
-plot_distributions_difference(fit_blue, fit_red)
 
 
 ## green -----------------------------------------------------------------
-df_green <- df_all %>% filter(stimuli == "green")
-n <- nrow(df_green) # number of measurements
-df <- data.frame(r=df_green$r, g=df_green$g, b=df_green$b)
-fit_green <- b_color(df)
+data_green <- data_all %>% filter(stimuli == "green")
+data_green <- data.frame(r=data_green$r, g=data_green$g, b=data_green$b)
+fit_green <- b_color(colors=data_green, priors=priors)
+
+# check fit
+plot_trace(fit_green)
+print(fit_green)
+plot_fit(fit_green)
+
+# additional fit visualization for hue
+plot_fit_hsv(fit_green)
 
 
 ## yellow ----------------------------------------------------------------
-df_yellow <- df_all %>% filter(stimuli == "yellow")
-n <- nrow(df_yellow) # number of measurements
-df <- data.frame(r=df_yellow$r, g=df_yellow$g, b=df_yellow$b)
-fit_yellow <- b_color(df)
+data_yellow <- data_all %>% filter(stimuli == "yellow")
+data_yellow <- data.frame(r=data_yellow$r, g=data_yellow$g, b=data_yellow$b)
+fit_yellow <- b_color(colors=data_yellow, priors=priors)
+
+# check fit
+plot_trace(fit_yellow)
+print(fit_yellow)
+plot_fit(fit_yellow)
+
+# additional fit visualization for hue
+plot_fit_hsv(fit_yellow)
 
 
 ## magenta ---------------------------------------------------------------
-df_magenta <- df_all %>% filter(stimuli == "magenta")
-n <- nrow(df_magenta) # number of measurements
-df <- data.frame(r=df_magenta$r, g=df_magenta$g, b=df_magenta$b)
-fit_magenta <- b_color(df)
+data_magenta <- data_all %>% filter(stimuli == "magenta")
+data_magenta <- data.frame(r=data_magenta$r, g=data_magenta$g, b=data_magenta$b)
+fit_magenta <- b_color(colors=data_magenta, priors=priors)
+
+# check fit
+plot_trace(fit_magenta)
+print(fit_magenta)
+plot_fit(fit_magenta)
+
+# additional fit visualization for hue
+plot_fit_hsv(fit_magenta)
 
 
 ## cyan ------------------------------------------------------------------
-df_cyan <- df_all %>% filter(stimuli == "cyan")
-n <- nrow(df_cyan) # number of measurements
-df <- data.frame(r=df_cyan$r, g=df_cyan$g, b=df_cyan$b)
-fit_cyan <- b_color(df)
+data_cyan <- data_all %>% filter(stimuli == "cyan")
+data_cyan <- data.frame(r=data_cyan$r, g=data_cyan$g, b=data_cyan$b)
+fit_cyan <- b_color(colors=data_cyan, priors=priors)
 
-## analysis plots --------------------------------------------------------
+# check fit
+plot_trace(fit_cyan)
+print(fit_cyan)
+plot_fit(fit_cyan)
+
+# additional fit visualization for hue
+plot_fit_hsv(fit_cyan)
+
+
+## analysis plots -------------------------------------------------------------
+color_levels <- c("red", "green", "blue", "yellow", "cyan", "magenta")
 # predicted afterimages of trichromatic theory
-df_trichromatic <- data.frame(stimuli = factor(color_levels, levels=color_levels),
+trichromatic <- data.frame(stimuli = factor(color_levels, levels=color_levels),
                               r = c(0, 255, 255, 0, 255, 0),
                               g = c(255, 0, 255, 0, 0, 255),
                               b = c(255, 255, 0, 255, 0, 0))
-df_trichromatic[c("h", "s", "v")] <- with(df_trichromatic, t(rgb2hsv(r, g, b, maxColorValue=255)))
-df_trichromatic$h <- df_trichromatic$h * 2*pi
+trichromatic[c("h", "s", "v")] <- with(trichromatic, t(rgb2hsv(r, g, b, maxColorValue=255)))
+trichromatic$h <- trichromatic$h * 2*pi
 
 # predicted afterimages of opponent-process theory
-df_opponent_process <- data.frame(stimuli = factor(color_levels, levels=color_levels),
+opponent_process <- data.frame(stimuli = factor(color_levels, levels=color_levels),
                                   r = c(0, 255, 255, 0, 255, 127),
                                   g = c(255, 0, 255, 0, 127, 255),
                                   b = c(0, 0, 0, 255, 0, 0))
-df_opponent_process[c("h", "s", "v")] <- with(df_opponent_process, t(rgb2hsv(r, g, b, maxColorValue=255)))
-df_opponent_process$h <- df_opponent_process$h * 2*pi
+opponent_process[c("h", "s", "v")] <- with(opponent_process, t(rgb2hsv(r, g, b, maxColorValue=255)))
+opponent_process$h <- opponent_process$h * 2*pi
 
 # red
-stimuli <- "red"
+stimulus <- "red"
 lines <- list()
-lines[[1]] <- c(df_trichromatic[df_trichromatic$stimuli == stimuli, ]$h,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$s,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$v)
-lines[[2]] <- c(df_opponent_process[df_opponent_process$stimuli == stimuli, ]$h,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$s,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$v)
+lines[[1]] <- c(trichromatic[trichromatic$stimuli == stimulus, ]$h,
+                trichromatic[trichromatic$stimuli == stimulus, ]$s,
+                trichromatic[trichromatic$stimuli == stimulus, ]$v)
+lines[[2]] <- c(opponent_process[opponent_process$stimuli == stimulus, ]$h,
+                opponent_process[opponent_process$stimuli == stimulus, ]$s,
+                opponent_process[opponent_process$stimuli == stimulus, ]$v)
 
 points <- list()
-points[[1]] <- c(df_stimuli[df_stimuli$stimuli == stimuli, ]$h_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$s_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$v_s)
+points[[1]] <- c(stimuli[stimuli$stimuli == stimulus, ]$h_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$s_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$v_s)
 
-plot_red <- plot_means_hsv(fit_red, points=points, lines=lines, hsv=TRUE)
+plot_red <- plot_distributions_hsv(fit_red, points=points, lines=lines, hsv=TRUE)
 plot_red <- plot_red + ggtitle("Red") + theme(plot.title = element_text(hjust = 0.5))
-
-plot_red_d <- plot_distributions_hsv(fit_red, points=points, lines=lines, hsv=TRUE)
-plot_red_d <- plot_red_d + ggtitle("Red") + theme(plot.title = element_text(hjust = 0.5))
 
 
 # blue
-stimuli <- "blue"
+stimulus <- "blue"
 lines <- list()
-lines[[1]] <- c(df_trichromatic[df_trichromatic$stimuli == stimuli, ]$h,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$s,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$v)
-lines[[2]] <- c(df_opponent_process[df_opponent_process$stimuli == stimuli, ]$h,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$s,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$v)
+lines[[1]] <- c(trichromatic[trichromatic$stimuli == stimulus, ]$h,
+                trichromatic[trichromatic$stimuli == stimulus, ]$s,
+                trichromatic[trichromatic$stimuli == stimulus, ]$v)
+lines[[2]] <- c(opponent_process[opponent_process$stimuli == stimulus, ]$h,
+                opponent_process[opponent_process$stimuli == stimulus, ]$s,
+                opponent_process[opponent_process$stimuli == stimulus, ]$v)
 
 points <- list()
-points[[1]] <- c(df_stimuli[df_stimuli$stimuli == stimuli, ]$h_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$s_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$v_s)
+points[[1]] <- c(stimuli[stimuli$stimuli == stimulus, ]$h_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$s_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$v_s)
 
-plot_blue <- plot_means_hsv(fit_blue, points=points, lines=lines, hsv=TRUE)
+plot_blue <- plot_distributions_hsv(fit_blue, points=points, lines=lines, hsv=TRUE)
 plot_blue <- plot_blue + ggtitle("Blue") + theme(plot.title = element_text(hjust = 0.5))
-
-plot_blue_d <- plot_distributions_hsv(fit_blue, points=points, lines=lines, hsv=TRUE)
-plot_blue_d <- plot_blue_d + ggtitle("Blue") + theme(plot.title = element_text(hjust = 0.5))
 
 
 # green
-stimuli <- "green"
+stimulus <- "green"
 lines <- list()
-lines[[1]] <- c(df_trichromatic[df_trichromatic$stimuli == stimuli, ]$h,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$s,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$v)
-lines[[2]] <- c(df_opponent_process[df_opponent_process$stimuli == stimuli, ]$h,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$s,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$v)
+lines[[1]] <- c(trichromatic[trichromatic$stimuli == stimulus, ]$h,
+                trichromatic[trichromatic$stimuli == stimulus, ]$s,
+                trichromatic[trichromatic$stimuli == stimulus, ]$v)
+lines[[2]] <- c(opponent_process[opponent_process$stimuli == stimulus, ]$h,
+                opponent_process[opponent_process$stimuli == stimulus, ]$s,
+                opponent_process[opponent_process$stimuli == stimulus, ]$v)
 
 points <- list()
-points[[1]] <- c(df_stimuli[df_stimuli$stimuli == stimuli, ]$h_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$s_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$v_s)
+points[[1]] <- c(stimuli[stimuli$stimuli == stimulus, ]$h_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$s_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$v_s)
 
-plot_green <- plot_means_hsv(fit_green, points=points, lines=lines, hsv=TRUE)
+plot_green <- plot_distributions_hsv(fit_green, points=points, lines=lines, hsv=TRUE)
 plot_green <- plot_green + ggtitle("Green") + theme(plot.title = element_text(hjust = 0.5))
-
-plot_green_d <- plot_distributions_hsv(fit_green, points=points, lines=lines, hsv=TRUE)
-plot_green_d <- plot_green_d + ggtitle("Green") + theme(plot.title = element_text(hjust = 0.5))
 
 
 # yellow
-stimuli <- "yellow"
+stimulus <- "yellow"
 lines <- list()
-lines[[1]] <- c(df_trichromatic[df_trichromatic$stimuli == stimuli, ]$h,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$s,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$v)
-lines[[2]] <- c(df_opponent_process[df_opponent_process$stimuli == stimuli, ]$h,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$s,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$v)
+lines[[1]] <- c(trichromatic[trichromatic$stimuli == stimulus, ]$h,
+                trichromatic[trichromatic$stimuli == stimulus, ]$s,
+                trichromatic[trichromatic$stimuli == stimulus, ]$v)
+lines[[2]] <- c(opponent_process[opponent_process$stimuli == stimulus, ]$h,
+                opponent_process[opponent_process$stimuli == stimulus, ]$s,
+                opponent_process[opponent_process$stimuli == stimulus, ]$v)
 
 points <- list()
-points[[1]] <- c(df_stimuli[df_stimuli$stimuli == stimuli, ]$h_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$s_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$v_s)
+points[[1]] <- c(stimuli[stimuli$stimuli == stimulus, ]$h_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$s_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$v_s)
 
-plot_yellow <- plot_means_hsv(fit_yellow, points=points, lines=lines, hsv=TRUE)
+plot_yellow <- plot_distributions_hsv(fit_yellow, points=points, lines=lines, hsv=TRUE)
 plot_yellow <- plot_yellow + ggtitle("Yellow") + theme(plot.title = element_text(hjust = 0.5))
 
-plot_yellow_d <- plot_distributions_hsv(fit_yellow, points=points, lines=lines, hsv=TRUE)
-plot_yellow_d <- plot_yellow_d + ggtitle("Yellow") + theme(plot.title = element_text(hjust = 0.5))
-
 
 # cyan
-stimuli <- "cyan"
+stimulus <- "cyan"
 lines <- list()
-lines[[1]] <- c(df_trichromatic[df_trichromatic$stimuli == stimuli, ]$h,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$s,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$v)
-lines[[2]] <- c(df_opponent_process[df_opponent_process$stimuli == stimuli, ]$h,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$s,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$v)
+lines[[1]] <- c(trichromatic[trichromatic$stimuli == stimulus, ]$h,
+                trichromatic[trichromatic$stimuli == stimulus, ]$s,
+                trichromatic[trichromatic$stimuli == stimulus, ]$v)
+lines[[2]] <- c(opponent_process[opponent_process$stimuli == stimulus, ]$h,
+                opponent_process[opponent_process$stimuli == stimulus, ]$s,
+                opponent_process[opponent_process$stimuli == stimulus, ]$v)
 
 points <- list()
-points[[1]] <- c(df_stimuli[df_stimuli$stimuli == stimuli, ]$h_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$s_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$v_s)
+points[[1]] <- c(stimuli[stimuli$stimuli == stimulus, ]$h_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$s_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$v_s)
 
-plot_cyan <- plot_means_hsv(fit_cyan, points=points, lines=lines, hsv=TRUE)
+plot_cyan <- plot_distributions_hsv(fit_cyan, points=points, lines=lines, hsv=TRUE)
 plot_cyan <- plot_cyan + ggtitle("Cyan") + theme(plot.title = element_text(hjust = 0.5))
 
-plot_cyan_d <- plot_distributions_hsv(fit_cyan, points=points, lines=lines, hsv=TRUE)
-plot_cyan_d <- plot_cyan_d + ggtitle("Cyan") + theme(plot.title = element_text(hjust = 0.5))
 
-
-# cyan
-stimuli <- "magenta"
+# magenta
+stimulus <- "magenta"
 lines <- list()
-lines[[1]] <- c(df_trichromatic[df_trichromatic$stimuli == stimuli, ]$h,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$s,
-                df_trichromatic[df_trichromatic$stimuli == stimuli, ]$v)
-lines[[2]] <- c(df_opponent_process[df_opponent_process$stimuli == stimuli, ]$h,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$s,
-                df_opponent_process[df_opponent_process$stimuli == stimuli, ]$v)
+lines[[1]] <- c(trichromatic[trichromatic$stimuli == stimulus, ]$h,
+                trichromatic[trichromatic$stimuli == stimulus, ]$s,
+                trichromatic[trichromatic$stimuli == stimulus, ]$v)
+lines[[2]] <- c(opponent_process[opponent_process$stimuli == stimulus, ]$h,
+                opponent_process[opponent_process$stimuli == stimulus, ]$s,
+                opponent_process[opponent_process$stimuli == stimulus, ]$v)
 
 points <- list()
-points[[1]] <- c(df_stimuli[df_stimuli$stimuli == stimuli, ]$h_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$s_s,
-                 df_stimuli[df_stimuli$stimuli == stimuli, ]$v_s)
+points[[1]] <- c(stimuli[stimuli$stimuli == stimulus, ]$h_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$s_s,
+                 stimuli[stimuli$stimuli == stimulus, ]$v_s)
 
-plot_magenta <- plot_means_hsv(fit_magenta, points=points, lines=lines, hsv=TRUE)
+plot_magenta <- plot_distributions_hsv(fit_magenta, points=points, lines=lines, hsv=TRUE)
 plot_magenta <- plot_magenta + ggtitle("Magenta") + theme(plot.title = element_text(hjust = 0.5))
 
-plot_magenta_d <- plot_distributions_hsv(fit_magenta, points=points, lines=lines, hsv=TRUE)
-plot_magenta_d <- plot_magenta_d + ggtitle("Magenta") + theme(plot.title = element_text(hjust = 0.5))
 
 # plot grid
 cowplot::plot_grid(plot_red, plot_green, plot_blue, plot_yellow, plot_cyan, plot_magenta, ncol=3, nrow=2, scale=0.9)
-cowplot::plot_grid(plot_red_d, plot_green_d, plot_blue_d, plot_yellow_d, plot_cyan_d, plot_magenta_d, ncol=3, nrow=2, scale=0.9)
 
 
 # tiles plot
 # get averages
-df_avg <- data.frame(r=numeric(), g=numeric(), b=numeric, stimuli=factor(), order=numeric())
-df_avg <- rbind(df_avg, data.frame(r=mean(fit_red@extract$mu_r),
+averages <- data.frame(r=numeric(), g=numeric(), b=numeric, stimuli=factor(), order=numeric())
+averages <- rbind(averages, data.frame(r=mean(fit_red@extract$mu_r),
                                    g=mean(fit_red@extract$mu_g),
                                    b=mean(fit_red@extract$mu_b),
                                    stimuli="red"))
-df_avg <- rbind(df_avg, data.frame(r=mean(fit_green@extract$mu_r),
+averages <- rbind(averages, data.frame(r=mean(fit_green@extract$mu_r),
                                    g=mean(fit_green@extract$mu_g),
                                    b=mean(fit_green@extract$mu_b),
                                    stimuli="green"))
-df_avg <- rbind(df_avg, data.frame(r=mean(fit_blue@extract$mu_r),
+averages <- rbind(averages, data.frame(r=mean(fit_blue@extract$mu_r),
                                    g=mean(fit_blue@extract$mu_g),
                                    b=mean(fit_blue@extract$mu_b),
                                    stimuli="blue"))
-df_avg <- rbind(df_avg, data.frame(r=mean(fit_yellow@extract$mu_r),
+averages <- rbind(averages, data.frame(r=mean(fit_yellow@extract$mu_r),
                                    g=mean(fit_yellow@extract$mu_g),
                                    b=mean(fit_yellow@extract$mu_b),
                                    stimuli="yellow"))
-df_avg <- rbind(df_avg, data.frame(r=mean(fit_cyan@extract$mu_r),
+averages <- rbind(averages, data.frame(r=mean(fit_cyan@extract$mu_r),
                                    g=mean(fit_cyan@extract$mu_g),
                                    b=mean(fit_cyan@extract$mu_b),
                                    stimuli="cyan"))
-df_avg <- rbind(df_avg, data.frame(r=mean(fit_magenta@extract$mu_r),
+averages <- rbind(averages, data.frame(r=mean(fit_magenta@extract$mu_r),
                                    g=mean(fit_magenta@extract$mu_g),
                                    b=mean(fit_magenta@extract$mu_b),
                                    stimuli="magenta"))
-levels(df_avg$stimuli) <- color_levels
+levels(averages$stimuli) <- color_levels
 
 # add hsv
-df_avg[c("h", "s", "v")] <- t(rgb2hsv(df_avg$r, df_avg$g, df_avg$b, maxColorValue = 255))
+averages[c("h", "s", "v")] <- t(rgb2hsv(averages$r, averages$g, averages$b, maxColorValue = 255))
 
 # add stimuli
-df_avg <- inner_join(df_avg, df_stimuli)
+averages <- inner_join(averages, stimuli)
 
 # plot
-tiles_plot <- ggplot(df_avg, aes(ymin=-as.numeric(stimuli)*10 + 1, ymax=-as.numeric(stimuli)*10 + 10)) +
+tiles_plot <- ggplot(averages, aes(ymin=-as.numeric(stimuli)*10 + 1, ymax=-as.numeric(stimuli)*10 + 10)) +
   geom_rect(aes(fill=rgb(r_s, g_s, b_s, maxColorValue=255), xmin=11, xmax=20)) +
-  geom_rect(data=df_trichromatic, aes(fill=rgb(r, g, b, maxColorValue=255)), xmin=31-5, xmax=40-5) +
-  geom_rect(data=df_opponent_process, aes(fill=rgb(r, g, b, maxColorValue=255)), xmin=41-5, xmax=50-5) +
+  geom_rect(data=trichromatic, aes(fill=rgb(r, g, b, maxColorValue=255)), xmin=31-5, xmax=40-5) +
+  geom_rect(data=opponent_process, aes(fill=rgb(r, g, b, maxColorValue=255)), xmin=41-5, xmax=50-5) +
   geom_rect(xmin=61-10, xmax=70-10, aes(fill=rgb(r, g, b, maxColorValue=255), xmin=11, xmax=20)) +
   geom_rect(xmin=71-10, xmax=80-10, aes(fill=hsv(h, 1, 1))) +
   scale_fill_identity() +
