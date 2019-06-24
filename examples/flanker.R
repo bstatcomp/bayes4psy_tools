@@ -1,5 +1,6 @@
 # libs
 library(bayes4psy)
+library(dplyr)
 
 ## data wrangling -------------------------------------------------------------
 # load data
@@ -7,11 +8,12 @@ data <- read.table("../examples/data/flanker.csv", sep="\t", header=TRUE)
 
 ## reaction time analysis - test vs control group -----------------------------
 # analyse only correct answers
-correct <- data[data$result == "correct", ]
-
 ## fit reaction times model to control and test groups fit --------------------
-control_rt <- correct[correct$group == "control", ]
-test_rt <- correct[correct$group == "test", ]
+control_rt <- data %>% filter(result == "correct" &
+                                 group == "control")
+
+test_rt <- data %>% filter(result == "correct" &
+                                 group == "test")
 
 # control group subject indexes range is 22..45 cast it to 1..23
 # test group indexes are OK
@@ -36,9 +38,9 @@ print(rt_test_fit)
 
 # check fits
 plot_fit(rt_control_fit)
-plot_fit(rt_control_fit, subjects=TRUE)
+plot_fit(rt_control_fit, subjects=FALSE)
 plot_fit(rt_test_fit)
-plot_fit(rt_test_fit, subjects=TRUE)
+plot_fit(rt_test_fit, subjects=FALSE)
 
 
 ## analysis of reaction times between control and test group ------------------
@@ -61,8 +63,8 @@ data$result_numeric <- 0
 data[data$result == "correct", ]$result_numeric <- 1
 
 # split to control and test groups
-control_sr <- data[data$group == "control", ]
-test_sr <- data[data$group == "test", ]
+control_sr <- data %>% filter(group == "control")
+test_sr <- data %>% filter(group == "test")
 
 # control group subject indexes range is 22..45 cast it to 1..23
 # test group indexes are OK
@@ -79,10 +81,13 @@ priors <- list(c("p", p_prior),
 # fit
 sr_control_fit <- b_success_rate(r=control_sr$result_numeric,
                                  s=control_sr$subject,
-                                 priors=priors)
+                                 priors=priors,
+                                 iter=4000)
+
 sr_test_fit <- b_success_rate(r=test_sr$result_numeric,
                               s=test_sr$subject,
-                              priors=priors)
+                              priors=priors,
+                              iter=4000)
 
 # plot trace
 plot_trace(sr_control_fit)
@@ -94,14 +99,14 @@ print(sr_test_fit)
 
 # check fits
 plot_fit(sr_control_fit)
-plot_fit(sr_control_fit, subjects=TRUE)
+plot_fit(sr_control_fit, subjects=FALSE)
 plot_fit(sr_test_fit)
-plot_fit(sr_test_fit, subjects=TRUE)
+plot_fit(sr_test_fit, subjects=FALSE)
 
 
 ## analysis of sucess rate between control and test group ------------------
 # set rope (region of practical equivalence) interval to +/- 10ms
-# which one is
+# which one is higher
 sr_control_test <- compare_means(sr_control_fit, fit2=sr_test_fit)
 
 # difference plot
