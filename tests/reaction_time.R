@@ -53,7 +53,7 @@ subject_parameters <- get_subject_parameters(fit1)
 # compare_means(`reaction_time_class`, fit2=`reaction_time_class`)
 compare_means(fit1, fit2=fit2)
 
-# compare_means(`reaction_time_class`, fit2=`reaction_time_class`, par='mu/lambda")
+# compare_means(`reaction_time_class`, fit2=`reaction_time_class`, par='mu/lambda')
 compare_means(fit1, fit2=fit2, par="mu")
 
 # compare_means(`reaction_time_class`, fits=`list`)
@@ -62,7 +62,7 @@ compare_means(fit1, fits=fit_list)
 # plot_means_difference(`reaction_time_class`, fit2=`reaction_time_class`)
 plot_means_difference(fit1, fit2=fit2)
 
-# plot_means_difference(`reaction_time_class`, fit2=`reaction_time_class`, par='mu/lambda")
+# plot_means_difference(`reaction_time_class`, fit2=`reaction_time_class`, par='mu/lambda')
 plot_means_difference(fit1, fit2=fit2, par="mu")
 
 # plot_means_difference(`reaction_time_class`, fits=`list`)
@@ -74,7 +74,7 @@ plot_means(fit1)
 # plot_means(`reaction_time_class`, fit2=`reaction_time_class`)
 plot_means(fit1, fit2=fit1)
 
-# plot_means(`reaction_time_class`, fit2=`reaction_time_class`, par='mu/lambda")
+# plot_means(`reaction_time_class`, fit2=`reaction_time_class`, par='mu/lambda')
 plot_means(fit1, fit2=fit2, par="mu")
 
 # plot_means(`reaction_time_class`, fits=`list`)

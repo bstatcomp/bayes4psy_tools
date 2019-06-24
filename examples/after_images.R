@@ -7,12 +7,11 @@ library(ggplot2)
 ## data wrangling and fitting -------------------------------------------------
 # load data
 data_all <- read.table("../examples/data/after_images.csv", sep="\t", header=TRUE)
-data_all2 <- data_all
 
 # add stimuli data
 colors <- c("cyan", "magenta", "blue", "yellow", "green", "red")
 stimuli <- expand.grid(r_s=c(255, 0), g_s=c(255, 0), b_s=c(255, 0))[c(-1, -8), ] %>%
-  mutate(stimuli=factor(colors, levels=color_levels)) %>%
+  mutate(stimuli=factor(colors)) %>%
   arrange(stimuli)
 stimuli[c("h_s", "s_s", "v_s")] <- with(stimuli, t(rgb2hsv(r_s, g_s, b_s, maxColorValue=255)))
 
@@ -23,56 +22,40 @@ stimuli$h_s <- stimuli$h_s * 2*pi
 data_all <- inner_join(data_all, stimuli)
 
 
-## priors ---------------------------------------------------------------------
-mu_prior <- b_prior(family="uniform", pars=c(0, 255))
-sigma_prior <- b_prior(family="uniform", pars=c(0, 100))
-
-# attach priors to relevant parameters
-priors <- list(c("mu_r", mu_prior),
-               c("sigma_r", sigma_prior),
-               c("mu_g", mu_prior),
-               c("sigma_g", sigma_prior),
-               c("mu_b", mu_prior),
-               c("sigma_b", sigma_prior))
-
-
-## blue stimuli ---------------------------------------------------------------
-data_blue <- data_all %>% filter(stimuli == "blue")
-data_blue <- data.frame(r=data_blue$r, g=data_blue$g, b=data_blue$b)
-fit_blue <- b_color(colors=data_blue, priors=priors)
-
-# check fit
-plot_trace(fit_blue)
-print(fit_blue)
-plot_fit(fit_blue)
-
-# additional fit visualization for hue
-plot_fit_hsv(fit_blue)
-
-
 ## red stimuli ----------------------------------------------------------------
 data_red <- data_all %>% filter(stimuli == "red")
 data_red <- data.frame(r=data_red$r, g=data_red$g, b=data_red$b)
-fit_red <- b_color(colors=data_red, priors=priors)
+fit_red <- b_color(colors=data_red)
 
 # check fit
 plot_trace(fit_red)
 print(fit_red)
-plot_fit(fit_red)
 
 # additional fit visualization for hue
 plot_fit_hsv(fit_red)
 
 
+## blue stimuli ---------------------------------------------------------------
+data_blue <- data_all %>% filter(stimuli == "blue")
+data_blue <- data.frame(r=data_blue$r, g=data_blue$g, b=data_blue$b)
+fit_blue <- b_color(colors=data_blue)
+
+# check fit
+plot_trace(fit_blue)
+print(fit_blue)
+
+# additional fit visualization for hue
+plot_fit_hsv(fit_blue)
+
+
 ## green -----------------------------------------------------------------
 data_green <- data_all %>% filter(stimuli == "green")
 data_green <- data.frame(r=data_green$r, g=data_green$g, b=data_green$b)
-fit_green <- b_color(colors=data_green, priors=priors)
+fit_green <- b_color(colors=data_green)
 
 # check fit
 plot_trace(fit_green)
 print(fit_green)
-plot_fit(fit_green)
 
 # additional fit visualization for hue
 plot_fit_hsv(fit_green)
@@ -81,12 +64,11 @@ plot_fit_hsv(fit_green)
 ## yellow ----------------------------------------------------------------
 data_yellow <- data_all %>% filter(stimuli == "yellow")
 data_yellow <- data.frame(r=data_yellow$r, g=data_yellow$g, b=data_yellow$b)
-fit_yellow <- b_color(colors=data_yellow, priors=priors)
+fit_yellow <- b_color(colors=data_yellow)
 
 # check fit
 plot_trace(fit_yellow)
 print(fit_yellow)
-plot_fit(fit_yellow)
 
 # additional fit visualization for hue
 plot_fit_hsv(fit_yellow)
@@ -95,12 +77,11 @@ plot_fit_hsv(fit_yellow)
 ## magenta ---------------------------------------------------------------
 data_magenta <- data_all %>% filter(stimuli == "magenta")
 data_magenta <- data.frame(r=data_magenta$r, g=data_magenta$g, b=data_magenta$b)
-fit_magenta <- b_color(colors=data_magenta, priors=priors)
+fit_magenta <- b_color(colors=data_magenta)
 
 # check fit
 plot_trace(fit_magenta)
 print(fit_magenta)
-plot_fit(fit_magenta)
 
 # additional fit visualization for hue
 plot_fit_hsv(fit_magenta)
@@ -109,12 +90,11 @@ plot_fit_hsv(fit_magenta)
 ## cyan ------------------------------------------------------------------
 data_cyan <- data_all %>% filter(stimuli == "cyan")
 data_cyan <- data.frame(r=data_cyan$r, g=data_cyan$g, b=data_cyan$b)
-fit_cyan <- b_color(colors=data_cyan, priors=priors)
+fit_cyan <- b_color(colors=data_cyan)
 
 # check fit
 plot_trace(fit_cyan)
 print(fit_cyan)
-plot_fit(fit_cyan)
 
 # additional fit visualization for hue
 plot_fit_hsv(fit_cyan)

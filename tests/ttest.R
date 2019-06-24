@@ -42,6 +42,9 @@ parameters <- get_parameters(fit1)
 # compare_means(`ttest_class`, fit2=`ttest_class`)
 compare_means(fit1, fit2=fit2)
 
+# compare_means(`ttest_class`, fit2=`ttest_class`, par='sigma')
+compare_means(fit1, fit2=fit2, par="sigma")
+
 # compare_means(`ttest_class`, mu=`numeric`)
 compare_means(fit1, mu=150)
 
@@ -54,6 +57,9 @@ compare_means(fit1, fits=fit_list)
 # plot_means_difference(`ttest_class`, fit2=`ttest_class`)
 plot_means_difference(fit1, fit2=fit2)
 
+# plot_means_difference(`ttest_class`, fit2=`ttest_class`, par='sigma')
+plot_means_difference(fit1, fit2=fit2, par="sigma")
+
 # plot_means_difference(`ttest_class`, mu=`numeric`)
 plot_means_difference(fit1, mu=150)
 
@@ -65,6 +71,9 @@ plot_means(fit1)
 
 # plot_means(`ttest_class`, fit2=`ttest_class`)
 plot_means(fit1, fit2=fit2)
+
+# plot_means(`ttest_class`, fit2=`ttest_class`, par='sigma')
+plot_means(fit1, fit2=fit2, par="sigma")
 
 # plot_means(`ttest_class`, mu=`numeric`)
 plot_means(fit1, mu=150)

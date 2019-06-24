@@ -6,8 +6,9 @@ library(ggplot2)
 # load and prep data ----------------------------------------------------------
 data <- read.table("../examples/data/stroop_extended.csv", sep="\t", header=TRUE)
 
-# only correct trials
-data <- data %>% filter(acc==1)
+# for assesing reading speeds we will use only
+# correct trials and neutral condition
+data <- data %>% filter(acc==1 & cond == "neutral")
 
 # add age groups
 age_groups <- c("0-14", "15-29", "30-44", "45-59", "60-74", "75-89")
@@ -16,13 +17,10 @@ data$age_group <- cut(data$age,
                     labels=age_groups)
 
 
-# analysis for neutral condition ----------------------------------------------
-neutral <- data %>% filter(cond == "neutral")
-
-# fit all age groups
+# fit all age groups ----------------------------------------------------------
 fit_list <- list()
 for (a in age_groups) {
-  age_group_data <- neutral %>% filter(age_group == a)
+  age_group_data <- data %>% filter(age_group == a)
 
   # map subjects to 1..n
   subjects <- unique(age_group_data$subject)
