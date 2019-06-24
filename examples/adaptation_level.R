@@ -38,9 +38,9 @@ plot_trace(fit1_part2)
 
 # check fits
 plot_fit(fit1_part1)
-plot_fit(fit1_part1, subjects=TRUE)
+plot_fit(fit1_part1, subjects=FALSE)
 plot_fit(fit1_part2)
-plot_fit(fit1_part2, subjects=TRUE)
+plot_fit(fit1_part2, subjects=FALSE)
 
 # check n_eff and RHat
 print(fit1_part1)
@@ -79,9 +79,9 @@ plot_trace(fit2_part2)
 
 # check fits
 plot_fit(fit2_part1)
-plot_fit(fit2_part1, subjects=TRUE)
+plot_fit(fit2_part1, subjects=FALSE)
 plot_fit(fit2_part2)
-plot_fit(fit2_part2, subjects=TRUE)
+plot_fit(fit2_part2, subjects=FALSE)
 
 # check n_eff and RHat
 print(fit2_part1)

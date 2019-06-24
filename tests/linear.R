@@ -80,7 +80,7 @@ plot_distributions_difference(fit1, fit2=fit2, par="intercept")
 plot_fit(fit1)
 
 # plot_fit(`linear_class`, subjects='boolean')
-plot_fit(fit1, subjects=TRUE)
+plot_fit(fit1, subjects=FALSE)
 
 # plot_trace(`linear_class`)
 plot_trace(fit1)

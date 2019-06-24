@@ -89,7 +89,7 @@ plot_distributions_difference(fit1, fits=fit_list)
 plot_fit(fit1)
 
 # plot_fit(`success_rate_class`, subjects='boolean')
-plot_fit(fit1, subjects=TRUE)
+plot_fit(fit1, subjects=FALSE)
 
 # plot_trace(`success_rate_class`)
 plot_trace(fit1)

@@ -20,11 +20,11 @@ control_rt$subject <- control_rt$subject - 21
 # fit, use only 1 chain to speed up the process
 # this is only a demonstration
 # more chains or a longer chian would be needed for proper analysis
-rt_control_fit <- b_reaction_time(t=control_rt$rt, s=control_rt$subject,
-                                  chain=1, warmup=500, iter=2000)
+rt_control_fit <- b_reaction_time(t=control_rt$rt,
+                                  s=control_rt$subject)
 
-rt_test_fit <- b_reaction_time(t=test_rt$rt, s=test_rt$subject,
-                                  chain=1, warmup=500, iter=2000)
+rt_test_fit <- b_reaction_time(t=test_rt$rt,
+                               s=test_rt$subject)
 
 # plot trace
 plot_trace(rt_control_fit)
@@ -36,9 +36,9 @@ print(rt_test_fit)
 
 # check fits
 plot_fit(rt_control_fit)
-plot_fit(rt_control_fit, subjects=TRUE)
+plot_fit(rt_control_fit, subjects=FALSE)
 plot_fit(rt_test_fit)
-plot_fit(rt_test_fit, subjects=TRUE)
+plot_fit(rt_test_fit, subjects=FALSE)
 
 
 ## analysis of reaction times between control and test group ------------------
@@ -94,9 +94,9 @@ print(sr_test_fit)
 
 # check fits
 plot_fit(sr_control_fit)
-plot_fit(sr_control_fit, subjects=TRUE)
+plot_fit(sr_control_fit, subjects=FALSE)
 plot_fit(sr_test_fit)
-plot_fit(sr_test_fit, subjects=TRUE)
+plot_fit(sr_test_fit, subjects=FALSE)
 
 
 ## analysis of sucess rate between control and test group ------------------
