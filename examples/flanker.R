@@ -72,11 +72,9 @@ control_sr$subject <- control_sr$subject - 21
 
 # priors
 p_prior <- b_prior(family="beta", pars=c(1, 1))
-tau_prior <- b_prior(family="uniform", pars=c(0, 500))
 
 # attach priors to relevant parameters
-priors <- list(c("p", p_prior),
-               c("tau", tau_prior))
+priors <- list(c("p", p_prior))
 
 # fit
 sr_control_fit <- b_success_rate(r=control_sr$result_numeric,

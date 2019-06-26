@@ -7,7 +7,7 @@ data <- read.table("../examples/data/stroop_simple.csv", sep="\t", header=TRUE)
 
 ## ttest fits -----------------------------------------------------------------
 # priors
-mu_prior <- b_prior(family="normal", pars=c(75, 50))
+mu_prior <- b_prior(family="normal", pars=c(60, 30))
 sigma_prior <- b_prior(family="uniform", pars=c(0, 200))
 
 # attach priors to relevant parameters

@@ -7,20 +7,7 @@ library(ggplot2)
 ## data wrangling and fitting -------------------------------------------------
 # load data
 data_all <- read.table("../examples/data/after_images.csv", sep="\t", header=TRUE)
-
-# add stimuli data
-colors <- c("cyan", "magenta", "blue", "yellow", "green", "red")
-stimuli <- expand.grid(r_s=c(255, 0), g_s=c(255, 0), b_s=c(255, 0))[c(-1, -8), ] %>%
-  mutate(stimuli=factor(colors)) %>%
-  arrange(stimuli)
-stimuli[c("h_s", "s_s", "v_s")] <- with(stimuli, t(rgb2hsv(r_s, g_s, b_s, maxColorValue=255)))
-
-# cast hue to 0 .. 2pi
-stimuli$h_s <- stimuli$h_s * 2*pi
-
-# merge stimuli data with measurements
-data_all <- inner_join(data_all, stimuli)
-
+stimuli <- read.table("../examples/data/after_images_stimuli.csv", sep="\t", header=TRUE)
 
 ## red stimuli ----------------------------------------------------------------
 data_red <- data_all %>% filter(stimuli == "red")
@@ -101,22 +88,8 @@ plot_fit_hsv(fit_cyan)
 
 
 ## analysis plots -------------------------------------------------------------
-color_levels <- c("red", "green", "blue", "yellow", "cyan", "magenta")
-# predicted afterimages of trichromatic theory
-trichromatic <- data.frame(stimuli = factor(color_levels, levels=color_levels),
-                              r = c(0, 255, 255, 0, 255, 0),
-                              g = c(255, 0, 255, 0, 0, 255),
-                              b = c(255, 255, 0, 255, 0, 0))
-trichromatic[c("h", "s", "v")] <- with(trichromatic, t(rgb2hsv(r, g, b, maxColorValue=255)))
-trichromatic$h <- trichromatic$h * 2*pi
-
-# predicted afterimages of opponent-process theory
-opponent_process <- data.frame(stimuli = factor(color_levels, levels=color_levels),
-                                  r = c(0, 255, 255, 0, 255, 127),
-                                  g = c(255, 0, 255, 0, 127, 255),
-                                  b = c(0, 0, 0, 255, 0, 0))
-opponent_process[c("h", "s", "v")] <- with(opponent_process, t(rgb2hsv(r, g, b, maxColorValue=255)))
-opponent_process$h <- opponent_process$h * 2*pi
+trichromatic <- read.table("../examples/data/after_images_trichromatic.csv", sep="\t", header=TRUE)
+opponent_process <- read.table("../examples/data/after_images_opponent_process.csv", sep="\t", header=TRUE)
 
 # red
 stimulus <- "red"
@@ -238,6 +211,7 @@ cowplot::plot_grid(plot_red, plot_green, plot_blue, plot_yellow, plot_cyan, plot
 
 # tiles plot
 # get averages
+color_levels <- c("red", "green", "blue", "yellow", "cyan", "magenta")
 averages <- data.frame(r=numeric(), g=numeric(), b=numeric, stimuli=factor(), order=numeric())
 averages <- rbind(averages, data.frame(r=mean(fit_red@extract$mu_r),
                                    g=mean(fit_red@extract$mu_g),
