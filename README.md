@@ -9,6 +9,10 @@ A repository containing supporting tools (mainly examples of use) for the **baye
 
 ## Version history
 
+### v 1.3.0
+Moved tests and examples as vignettes to the bayes4psy repository.
+Removed the bayes4psy submodule.
+
 ### v 1.2.0
 After images example.
 
